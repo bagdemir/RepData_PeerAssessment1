@@ -1,38 +1,44 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
-```{r,echo=TRUE}
+
+```r
 activity <- read.csv("activity.csv")
 ```
 ## What is mean total number of steps taken per day?
-```{r,echo=TRUE}
+
+```r
 totalStepsByDate <- aggregate(. ~ date, activity, sum)[1:2]
 totalSteps <- totalStepsByDate[, 2]
 hist(totalSteps)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
-The mean and the median value of the steps, `r mean(totalSteps)` and `r median(totalSteps)`
+
+The mean and the median value of the steps, 1.0766189\times 10^{4} and 10765
 
 ## What is the average daily activity pattern?
-```{r, echo=TRUE, warning=FALSE}
+
+```r
 cleanSteps <- activity[!is.na(activity$steps),]
 cleanSteps <- cleanSteps[, c("interval", "steps")]
 stepMean <- aggregate(cleanSteps, by=list(cleanSteps$interval), FUN=mean, na.rm=TRUE)
 with(stepMean, plot(x=interval, y=steps, type="l"))
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 m <- apply(stepMean, 2, max)[["interval"]]
 ```
-The interval in which max steps are taken : `r m`.
+The interval in which max steps are taken : 2355.
 
 ## Imputing missing values
-`r dim(activity[complete.cases(activity),])[1]` missing values do exist.
+15264 missing values do exist.
 
-```{r, echo=TRUE}
+
+```r
 activityCopy <- cbind(activity)
 findMeanFor <- function(interval) {
   stepMean[stepMean$interval == interval, "steps"]
@@ -50,11 +56,13 @@ newTotalSteps <- newTotalStepsByDate[, 2]
 hist(newTotalSteps)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r, echo=TRUE, warning=FALSE}
 
+```r
 activity3 <- cbind(activity[!is.na(activity$steps), ])
 activity3[, "weekday"] <- NA
 for (i in 1:nrow(activity3)) { 
@@ -66,3 +74,5 @@ stepMean <- aggregate(activity3, by=list(activity3$interval, activity3$weekday),
 library(lattice)
 with(stepMean, xyplot(steps ~ interval | Group.2, type="l"))
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
